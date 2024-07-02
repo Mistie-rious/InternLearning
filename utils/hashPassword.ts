@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+const bcrypt = require('bcryptjs');
 
 const hashPassword =  async (password: string): Promise<string> => {
     return new Promise((resolve, reject) => {
