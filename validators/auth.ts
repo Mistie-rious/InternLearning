@@ -34,6 +34,21 @@ const emailValidator = [
       .notEmpty()
       .withMessage("Email is required"),
   ]
+
+const codeValidator = [
+    check('email')
+    .isEmail()
+    .withMessage('Invalid email')
+    .notEmpty()
+    .withMessage('Email is required'),
+
+    check('code')
+    .isLength({min: 6})
+    .withMessage('Invalid code')
+    .notEmpty()
+    .withMessage('Code is required')
+    
+]
   
 
-export { signupvalidator, signinvalidator, emailValidator };
+export { signupvalidator, signinvalidator, emailValidator, codeValidator };

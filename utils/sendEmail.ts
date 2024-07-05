@@ -33,6 +33,7 @@ interface EmailParams {
             <div>
             <h3>Use this below code to ${content}</h3>
             <p><strong>Code:</strong> ${code} </p>
+            <p>It expires in 1 minute. </p>
             </div>
             `
         }
