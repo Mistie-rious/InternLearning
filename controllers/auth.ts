@@ -6,7 +6,7 @@ import comparePassword from "../utils/comparePassword";
 import generateToken from "../utils/generateToken";
 import generateCode from "../utils/generateCode";
 import sendEmail from "../utils/sendEmail";
-import { readUsedSize } from "chart.js/helpers";
+
 
 const signup = async (req: any, res: Response, next: NextFunction) => {
   try {
@@ -71,7 +71,7 @@ const verifyCode = async (req: any, res: Response, next: NextFunction) => {
       throw new Error("Email not registered");
     }
 
-    const { code, expiresAt } = generateCode(6, 1);
+    const { code, expiresAt } = generateCode(6, 5);
 
     const verification = await Verification.findOneAndUpdate(
       { userId: user._id, type: "emailVerification" },
@@ -153,7 +153,7 @@ const forgotPasswordCode = async (
       throw new Error("Email not registered");
     }
 
-    const { code, expiresAt } = generateCode(6, 1);
+    const { code, expiresAt } = generateCode(6, 5);
 
     const verification = await Verification.findOneAndUpdate(
       { userId: user._id, type: "forgotPassword" },
@@ -195,6 +195,8 @@ const recoverPassword = async (req: any, res: Response, next: NextFunction) => {
       verificationCode: code,
     });
 
+   
+
     if (
       !verification ||
       (verification.expiresAt && currentTime > verification.expiresAt)
@@ -204,8 +206,10 @@ const recoverPassword = async (req: any, res: Response, next: NextFunction) => {
 
     const hashedPassword = await hashPassword(password);
 
-    user.password = hashedPassword;
 
+    user.password = hashedPassword;
+    verification.verificationCode = null;
+    verification.expiresAt = null;
     await user.save();
   } catch (error) {
     next(error);
@@ -215,9 +219,10 @@ const recoverPassword = async (req: any, res: Response, next: NextFunction) => {
 const changePassword = async (req: any, res: Response, next: NextFunction) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const { _id } = req.user;
+    const {_id} = req.user
+    console.log(req.user)
 
-    const user = await User.findOne({ _id });
+  const user = await User.findOne({_id})
 
     if (!user) {
       res.statusCode = 404;
@@ -247,4 +252,4 @@ const changePassword = async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export default { signup, signin, verifyCode, verifyUser, forgotPasswordCode };
+export default { signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword };

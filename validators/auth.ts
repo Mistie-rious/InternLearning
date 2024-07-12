@@ -51,4 +51,43 @@ const codeValidator = [
 ]
   
 
-export { signupvalidator, signinvalidator, emailValidator, codeValidator };
+const recoverPasswordValidator = [
+  check('email')
+  .isEmail()
+  .withMessage('Invalid email')
+  .notEmpty()
+  .withMessage('Email is required'),
+
+  check('code')
+  .isLength({min: 6})
+  .withMessage('Invalid code')
+  .notEmpty()
+  .withMessage('Code is required'),
+
+  check("password")
+      .isLength({ min: 6 })
+      .withMessage('Password must be more than 6 characters')
+      .notEmpty()
+      .withMessage("Password is required")
+  
+]
+
+
+const changePasswordValidator = [
+
+  check("oldPassword")
+      .isLength({ min: 6 })
+      .withMessage('Password must be more than 6 characters')
+      .notEmpty()
+      .withMessage("Password is required"),
+
+      check("newPassword")
+      .isLength({ min: 6 })
+      .withMessage('Password must be more than 6 characters')
+      .notEmpty()
+      .withMessage("Password is required")
+  
+]
+
+
+export { signupvalidator, signinvalidator, emailValidator, codeValidator, recoverPasswordValidator, changePasswordValidator };

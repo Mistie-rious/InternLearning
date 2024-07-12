@@ -1,5 +1,5 @@
 import { Request,Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+const jwt = require('jsonwebtoken')
 const jwtsecret = process.env.JWT_SECRET;
 
 const isAuth = (req: any, res: Response, next: NextFunction) => {
@@ -12,7 +12,7 @@ const isAuth = (req: any, res: Response, next: NextFunction) => {
 
         if (payload) {
             req.user = {
-                name: payload.name,
+                _id: payload._id,
                 email: payload.email,
                 fullname: payload.fullname,
             }
