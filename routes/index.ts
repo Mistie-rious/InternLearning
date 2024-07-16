@@ -1,3 +1,3 @@
 import authRoute from './auth';
-
-export {authRoute}
+import categoryRoute from './category'
+export {authRoute, categoryRoute}
