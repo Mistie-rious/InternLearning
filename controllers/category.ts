@@ -20,14 +20,104 @@ const createCategory = async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-
 const getCategories = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const categories = await Category.find();
-    res.status(200).json(categories);
+    const { q, size, page } = req.query;
+    let query = {};
+
+    const sizeNumber = parseInt(size) || 10;
+    const pageNumber = parseInt(page) || 1;
+
+    if (q) {
+      const search = new RegExp(q, 'i');
+      query = { $or: [{ title: search }, { description: search }] };
+    }
+
+    const total = await Category.countDocuments(query);
+    const pages = Math.ceil(total / sizeNumber);
+    const categories = await Category.find(query)
+      .skip((pageNumber - 1) * sizeNumber)
+      .limit(sizeNumber)
+      .sort({ updatedAt: -1 });
+
+    res.status(200).json({
+      code: 200,
+      status: true,
+      message: 'Get categories successful',
+      data: { categories, total, pages, page: pageNumber, size: sizeNumber }
+    });
   } catch (error) {
-    
+    next(error);
   }
 };
 
-export default { createCategory };
+const getCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Category ID is required" });
+    }
+
+  
+
+    const category = await Category.findOne({ _id: id });
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json({data: category, message: 'Category received succesfully!S' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteCategory  = async (req: Request, res: Response, next: NextFunction) => {
+try{
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: "Category ID is required" });
+  }
+
+  const category = await Category.findOneAndDelete({ _id: id });
+
+  if (!category) {
+    return res.status(404).json({ message: "Category not found" });
+  }
+
+  res.status(200).json({data: category, message: 'Category deleted' });
+
+
+}catch(error){
+next(error)
+}
+}
+
+const updateCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Category ID is required" });
+    }
+
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { title, description },
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json({ data: category, message: 'Category updated successfully!' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createCategory, getCategories, getCategory, deleteCategory, updateCategory };

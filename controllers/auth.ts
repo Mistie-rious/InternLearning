@@ -10,7 +10,7 @@ import sendEmail from "../utils/sendEmail";
 
 const signup = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password , role} = req.body;
 
     const isEmailExist = await User.findOne({ email });
 
@@ -21,7 +21,7 @@ const signup = async (req: any, res: Response, next: NextFunction) => {
 
     const hashedPassword = await hashPassword(password);
 
-    const newUser = new User({ fullname, email, password: hashedPassword });
+    const newUser = new User({ fullname, email, password: hashedPassword , role});
     await newUser.save();
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {

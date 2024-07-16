@@ -5,6 +5,7 @@ interface User {
   _id: any,
     fullname: string;
     email: string;
+    role: string
   }
 
   const generateToken = (user: User): string => {
@@ -12,11 +13,14 @@ interface User {
           {
             _id: user._id,
             email: user.email,
-            fullname: user.fullname
+            fullname: user.fullname,
+            role: user.role
           },
           jwtsecret,
-          { expiresIn: '5m' }
+          { expiresIn: '1h' }
         );
+
+      
       
         return token;
       };
