@@ -1,3 +1,4 @@
 import authRoute from './auth';
 import categoryRoute from './category'
-export {authRoute, categoryRoute}
+import courseRoute from './course'
+export {authRoute, categoryRoute, courseRoute}

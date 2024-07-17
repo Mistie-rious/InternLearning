@@ -15,6 +15,7 @@ const isAuth = (req: any, res: Response, next: NextFunction) => {
                 _id: payload._id,
                 email: payload.email,
                 fullname: payload.fullname,
+                role: payload.role,
             }
             next()
          

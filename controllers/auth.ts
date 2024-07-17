@@ -35,6 +35,7 @@ const signin = async (req: any, res: Response, next: NextFunction) => {
 
     const user = await User.findOne({ email });
 
+  
     if (!user) {
       res.statusCode = 400;
       throw new Error("User doesn't exist.");

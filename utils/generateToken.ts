@@ -9,16 +9,21 @@ interface User {
   }
 
   const generateToken = (user: User): string => {
+
+
       const token = jwt.sign(
           {
             _id: user._id,
             email: user.email,
             fullname: user.fullname,
-            role: user.role
+            role: user.role,
+            welp: 'test'
           },
           jwtsecret,
           { expiresIn: '1h' }
         );
+
+        
 
       
       

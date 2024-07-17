@@ -5,6 +5,7 @@ const createCategory = async (req: any, res: Response, next: NextFunction) => {
   try {
     const { title, description } = req.body;
 
+
     const categoryExists = await Category.findOne({ title });
 
     if (categoryExists) {
@@ -20,6 +21,7 @@ const createCategory = async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
 const getCategories = async (req: any, res: Response, next: NextFunction) => {
   try {
     const { q, size, page } = req.query;

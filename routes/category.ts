@@ -12,8 +12,8 @@ router.get('/', isAuth, categoryController.getCategories)
 
 router.get('/:id', isAuth, categoryController.getCategory )
 
-router.delete('/delete/:id', isAuth, categoryController.deleteCategory)
+router.delete('/delete/:id', isAuth, isAdmin, categoryController.deleteCategory)
 
-router.put('/update/:id', isAuth, categoryController.updateCategory)
+router.put('/update/:id', isAuth, isAdmin, categoryController.updateCategory)
 
 export default router;
