@@ -60,4 +60,16 @@ const getCourseValidator = [
     .notEmpty().withMessage('ID is a required field')
     .isMongoId().withMessage('ID should be a valid Mongo ID'),
 ]
-export { createCourseValidator, getCourseValidator };
+
+const deleteCourseValidator = [
+  check('id')
+  .notEmpty().withMessage('ID is a required field')
+  .isMongoId().withMessage('ID should be a valid Mongo ID'),
+]
+
+const updateCourseValidator = [
+  check('id')
+  .notEmpty().withMessage('ID is a required field')
+  .isMongoId().withMessage('ID should be a valid Mongo ID'),
+]
+export { createCourseValidator, getCourseValidator, deleteCourseValidator, updateCourseValidator };

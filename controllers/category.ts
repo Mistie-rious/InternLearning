@@ -16,6 +16,8 @@ const createCategory = async (req: any, res: Response, next: NextFunction) => {
     const newCategory = new Category({ title, description });
 
     await newCategory.save();
+
+    
     res.status(201).json({ message: "Category created sucessfully!" });
   } catch (error) {
     next(error);

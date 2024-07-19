@@ -1,4 +1,5 @@
 import Course from "../models/course";
+import Category from "../models/category";
 import { NextFunction, Response, Request } from "express";
 
 const createCourse = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,6 +15,11 @@ if (isCourseExist) {
 
 const newCourse = new Course({ title, description, category, author, publishedDate, content, imageUrl, duration, level })
 await newCourse.save();
+
+await Course.findByIdAndUpdate(category, {
+  $push: { courses: newCourse._id }
+});
+
 
 res.status(201).json({ message: "Course created successfully" });
 
@@ -73,22 +79,42 @@ next(error)
 }
 
 const updateCourse = async (req: Request, res: Response, next: NextFunction) => {
-try{
-  const { title, description, category, author, publishedDate, content, imageUrl, duration, level } = req.body;
+  try {
+    const { title, description, category, author, publishedDate, content, imageUrl, duration, level } = req.body;
+    const { id } = req.params;
 
-  const { id } = req.params;
+    const updateData = { title, description, category, author, publishedDate, content, imageUrl, duration, level };
+    const options = { new: true };
 
-  const course = await Course.findOne({ _id: id });
+    const course = await Course.findOneAndUpdate({ _id: id }, updateData, options);
 
-  if (!course) {
-    res.status(404);
-    throw new Error("Course not found");
+    if (!course) {
+      res.status(404);
+      throw new Error("Course not found");
+    }
+
+    res.status(200).json(course);
+  } catch (error) {
+    next(error);
   }
+};
 
-  
-}catch(error){
+const deleteCourse  = async (req: Request, res: Response, next: NextFunction) => {
+  try{
+const { id } = req.params;
+
+const course = await Course.findOneAndDelete({ _id: id });
+
+if (!course) {
+  res.status(404);
+  throw new Error("Course not found");
 
 }
-}
 
-export default {createCourse, getCourses, getCourse};
+
+res.status(200).json({data: course, message: 'Course deleted' });
+  }catch(error){
+next(error)
+  }
+}
+export default {createCourse, getCourses, getCourse, updateCourse, deleteCourse};
