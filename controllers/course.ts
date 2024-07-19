@@ -16,7 +16,7 @@ if (isCourseExist) {
 const newCourse = new Course({ title, description, category, author, publishedDate, content, imageUrl, duration, level })
 await newCourse.save();
 
-await Course.findByIdAndUpdate(category, {
+await Category.findByIdAndUpdate(category, {
   $push: { courses: newCourse._id }
 });
 
