@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 const morgan = require('morgan')
-import connectToMongoDB from "./init/mongodb";
+import connectToMongoDB from "./init/mongoDb";
 import { authRoute, categoryRoute, courseRoute, contentRoute } from "./routes";
 dotenv.config();
 const app = express();
