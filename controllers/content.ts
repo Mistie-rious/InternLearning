@@ -39,4 +39,68 @@ const createContent = async (req: Request, res: Response, next: NextFunction) =>
     }
 };
 
-export default { createContent };
+const updateContent = async (req: Request, res: Response, next: NextFunction) => {
+
+    try{
+    const { contentType, order, title, description, course, content } = req.body;
+
+    const { id } = req.params;
+
+
+
+    const updatedContent = {
+        contentType, order, title, description, course, content
+    };
+
+    const options = { new: true };
+
+    const editedContent = await Content.findOneAndUpdate(
+        {_id : id},
+        updatedContent,
+        options
+    )
+
+    if (!editedContent) {
+        res.status(404).json({ message: 'Content not found' });
+        return;
+
+    }
+
+    res.status(200).json({ data: editedContent, message: 'Content updated successfully!' });
+}catch(error){
+next(error);
+}
+
+}
+
+const getContent = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+const { id } = req.params;
+
+const content = await Content.findOne({ _id: id }).populate('course');
+
+if (!content) {
+    res.status(404).json({ message: 'Content not found' });
+}
+
+res.status(200).json({ data: content, message: 'Content received successfully!' });
+
+}catch(error){
+    next(error);
+}
+
+}
+
+const deleteContent = async (req: Request, res: Response, next: NextFunction) => {
+const {id} = req.params;
+
+const content = await Content.findOneAndDelete({ _id: id });
+
+if (!content) {
+    res.status(404).json({ message: 'Content not found' });
+}
+
+res.status(200).json({ data: content, message: 'Content deleted successfully!' });
+
+}
+export default { createContent, updateContent , getContent, deleteContent };

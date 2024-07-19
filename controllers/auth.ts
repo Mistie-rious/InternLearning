@@ -212,6 +212,12 @@ const recoverPassword = async (req: any, res: Response, next: NextFunction) => {
     verification.verificationCode = null;
     verification.expiresAt = null;
     await user.save();
+
+    await verification.save();
+
+    res
+      .status(200)
+      .json({ code: 200, status: true, message: "Password reset successfully" });
   } catch (error) {
     next(error);
   }

@@ -6,14 +6,14 @@ const createCategory = async (req: any, res: Response, next: NextFunction) => {
     const { title, description } = req.body;
 
 
-    const categoryExists = await Category.findOne({ title });
+    const categoryExists = await Category.findOne({ title })
 
     if (categoryExists) {
       res.status(400);
       throw new Error("Category already exists");
     }
 
-    const newCategory = new Category({ title, description });
+    const newCategory = new Category({ title, description })
 
     await newCategory.save();
 
@@ -42,7 +42,8 @@ const getCategories = async (req: any, res: Response, next: NextFunction) => {
     const categories = await Category.find(query)
       .skip((pageNumber - 1) * sizeNumber)
       .limit(sizeNumber)
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .populate('courses');
 
     res.status(200).json({
       code: 200,
@@ -65,7 +66,7 @@ const getCategory = async (req: Request, res: Response, next: NextFunction) => {
 
   
 
-    const category = await Category.findOne({ _id: id });
+    const category = await Category.findOne({ _id: id }).populate('courses');
 
     if (!category) {
       return res.status(404).json({ message: "Category not found" });

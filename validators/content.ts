@@ -58,4 +58,12 @@ const createContentValidator = [
     .withMessage('Video ID must be a valid MongoDB ObjectId')
 ];
 
-export  {createContentValidator};
+const getContentValidator = [
+  check('id').isMongoId().withMessage('Invalid content ID.')
+];
+
+const deleteContentValidator = [
+  check('id').isMongoId().withMessage('Invalid content ID.')
+];
+
+export  {createContentValidator, getContentValidator, deleteContentValidator};
