@@ -67,4 +67,4 @@ const deleteFileFromS3 = async(Key: any) => {
     }
 }
 
-export {uploadNewFile, deleteFileFromS3, getSignedUrl}
+export {uploadNewFile, deleteFileFromS3, signedUrl}

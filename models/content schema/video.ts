@@ -1,19 +1,32 @@
 import mongoose from "mongoose";
 
-const videoSchema = new mongoose.Schema({
+const fileSchema = new mongoose.Schema({
+    key: {
+        type: String,
+        required: true
+    },
+    size: {
+        type: Number
+    },
+    mimetype: {
+        type: String
+    },
     url: {
-      type: String,
-      required: true
+        type: String,
+        required: true
     },
     duration: {
-      type: Number 
+        type: Number // Only applicable for videos
     },
     transcript: {
-      type: String 
+        type: String // Only applicable for videos
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
-  });
-  
-  const Video = mongoose.model('Video', videoSchema);
-  
-  export default Video;
-  
+}, { timestamps: true });
+
+const File = mongoose.model('File', fileSchema);
+
+export default File;
