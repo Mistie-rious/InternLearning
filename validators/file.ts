@@ -1,6 +1,9 @@
-const validateVideoExtension = (ext: string) => {
-    const videoExtensions = ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mpeg', '.mpg'];
-    return videoExtensions.includes(ext);
+const validateExtension = (ext: string) => {
+    if(ext === '.jpg' || ext === '.png' || ext === '.jpeg' || ext == '.mp4'){
+        return true
+    } else {
+        return false
+    }
 }
 
 const validateSpreadsheetExtension = (ext: string) => {
@@ -10,4 +13,4 @@ const validateSpreadsheetExtension = (ext: string) => {
 
 
 
-export {validateVideoExtension, validateSpreadsheetExtension}
+export {validateExtension, validateSpreadsheetExtension}

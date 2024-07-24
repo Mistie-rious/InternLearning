@@ -1,20 +1,9 @@
-import multer from 'multer';
-import path from 'path';
 
-const storage = multer.memoryStorage();
+const multer = require('multer')
 
-const fileFilter = (req: any, file: any, cb: any) => {
-  const filetypes = /video\/|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/;
-  const mimetype = filetypes.test(file.mimetype);
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb(new Error('Only videos and Excel files are allowed!'));
-  }
-};
-
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {fileSize: 1024 * 1024 * 50},
+})
 
 export default upload;

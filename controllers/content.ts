@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 import Content from "../models/content schema/content";
 import Course from "../models/course";
 import { Request, NextFunction, Response } from "express";
+import {fileController }from './'
 
 const createContent = async (
-  req: Request,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
@@ -25,14 +26,18 @@ const createContent = async (
       return;
     }
 
+    
+
+    
     const newContent = new Content({
       contentType,
       order,
       title,
       description,
       course,
-      content,
+      content: content 
     });
+
 
     await newContent.save();
 

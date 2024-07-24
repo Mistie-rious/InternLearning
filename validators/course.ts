@@ -72,4 +72,6 @@ const updateCourseValidator = [
   .notEmpty().withMessage('ID is a required field')
   .isMongoId().withMessage('ID should be a valid Mongo ID'),
 ]
+
+
 export { createCourseValidator, getCourseValidator, deleteCourseValidator, updateCourseValidator };

@@ -1,8 +1,11 @@
 import Course from "../models/course";
 import Category from "../models/category";
 import { NextFunction, Response, Request } from "express";
+import Progress from "../models/progress";
+
 
 const createCourse = async (
+
   req: Request,
   res: Response,
   next: NextFunction
@@ -50,6 +53,33 @@ const createCourse = async (
   }
 };
 
+const enrollCourse = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const {id} = req.params
+    const studentId = req.user._id; 
+
+
+
+    const progress = await Progress.findOne({ student: studentId, course: id });
+
+    if (progress) {
+      return res.status(400).json({ message: "Already enrolled in course" });
+    }
+
+    const newProgress = new Progress({
+      student: studentId,
+      course: id,
+      completedContents: [],
+      quizResults: []
+    });
+
+    await newProgress.save();
+
+    res.status(200).json({ message: "Enrolled in course successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
 const getCourses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { q, size, page } = req.query;
@@ -181,4 +211,5 @@ export default {
   getCourse,
   updateCourse,
   deleteCourse,
+  enrollCourse
 };

@@ -1,53 +1,49 @@
-import { NextFunction, Response, Request } from "express";
+import { NextFunction, Response, Request } from "express"
+const path = require('path')
+import {validateExtension }from '../validators/file'
+import {uploadNewFile, signedUrl, deleteFileFromS3} from "../utils/awsS3"
 
-import path from "path";
-import {validateSpreadsheetExtension, validateVideoExtension} from "../validators/file";
+import File from '../models/content schema/video'
+const uploadFile = async (req:any,res:Response,next:NextFunction) => {
+try{
+    const {file} = req
+    
+if(!file){
+    res.statusCode = 400
+    throw new Error('No file uploaded')
+}
 
-import { uploadNewFile, signedUrl, deleteFileFromS3 } from "../utils/awsS3";
+const ext = path.extname(file.originalname)
+const isValidExt = validateExtension(ext)
 
-import File from "../models/content schema/video";
+if(!isValidExt){
+res.statusCode = 400
+throw new Error('Invalid file extension')
+}
 
-const uploadVideo = async (req: any, res: Response, next: NextFunction) => {
-  try {
-    const { file } = req;
+const Key = await uploadNewFile(file, ext)
 
-    if (!file) {
-      res.statusCode = 400;
-      throw new Error("No file uploaded");
-    }
+if (Key){
+    const newFile = new File({
+        key: Key,
+        size: file.size,
+        mimetype: file.mimetype,
+        createdBy: req.user._id
+    })
 
-    const ext = path.extname(file.originalname);
-    const isValidExt = validateVideoExtension(ext);
-
-    if (!isValidExt) {
-      res.statusCode = 400;
-      throw new Error("Invalid file extension");
-    }
-
-    const Key = await uploadNewFile(file,ext)
-
-    if(Key){
-        const newFile = new File ({
-            key: Key,
-            size: file.size,
-            mimetype: file.mimetype,
-            createdBy: req.user._id
-        })
-
-        await newFile.save()
-
-    }
+    await newFile.save()
+}
 
     res.status(201).json({
         code: 201,
         status: true,
-        message: 'Video uploaded successfully',
-        data: {Key}
+        message: 'File uploaded successfully',
+        data: {Key }
     })
-  } catch (error) {
-    next(error);
-  }
-};
+}catch(error){
+    next(error)
+}
+}
 
 const getSignedUrl = async (req:any, res:Response, next:NextFunction) => {
     try{
@@ -65,50 +61,21 @@ const getSignedUrl = async (req:any, res:Response, next:NextFunction) => {
     }
 }
 
-const uploadSpreadsheet = async (req: any, res: Response, next: NextFunction) => {
+const deleteFile = async (req:any, res:Response, next:NextFunction) => {
     try{
-        const {file} = req
+        const {key} = req.query;
 
-        if(!file){
-            res.statusCode = 400
-            throw new Error('No file uploaded')
-        }
+        await deleteFileFromS3(key);
+        await File.findOneAndDelete({key})
 
-        
-    const ext = path.extname(file.originalname);
-    const isValidExt = validateSpreadsheetExtension(ext);
-
-    if (!isValidExt) {
-      res.statusCode = 400;
-      throw new Error("Invalid file extension");
-    }
-
-    const Key = await uploadNewFile(file,ext)
-
-    if(Key){
-        const newFile = new File ({
-            key: Key,
-            size: file.size,
-            mimetype: file.mimetype,
-            createdBy: req.user._id
+        res.status(200).json({
+            code: 200,
+            status: true,
+            message: 'File deleted successfully!'
         })
 
-        await newFile.save()
-
-    }
-
-    res.status(201).json({
-        code: 201,
-        status: true,
-        message: 'Spreasheet uploaded successfully',
-        data: {Key}
-    })
     }catch(error){
-
 
     }
 }
-
-
-
-export default {uploadVideo, getSignedUrl, uploadSpreadsheet}
+export default {uploadFile, getSignedUrl, deleteFile}

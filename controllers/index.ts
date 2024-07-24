@@ -4,4 +4,5 @@ import notFound from './notFound'
 import courseController from './course'
 import contentController from './content'
 import fileController from './file'
-export {authController, categoryController, courseController, contentController, fileController, notFound}
+import progressController from './progress'
+export {authController, categoryController, courseController, contentController, fileController, progressController, notFound}

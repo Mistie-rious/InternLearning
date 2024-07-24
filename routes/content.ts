@@ -6,7 +6,11 @@ import isAdmin from "../middlewares/isAdmin";
 import {createContentValidator, getContentValidator, deleteContentValidator }from "../validators/content";
 import validate from "../validators/validate";
 
-router.post('/create', isAuth, isAdmin, createContentValidator, validate, contentController.createContent);
+import upload from "../middlewares/upload";
+
+
+
+router.post('/create', isAuth, isAdmin, upload.single('Video'), validate, contentController.createContent);
 
 router.get('/:id', isAuth, getContentValidator, validate,  contentController.getContent);
 

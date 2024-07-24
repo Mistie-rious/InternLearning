@@ -7,7 +7,6 @@ import generateToken from "../utils/generateToken";
 import generateCode from "../utils/generateCode";
 import sendEmail from "../utils/sendEmail";
 
-
 const signup = async (req: any, res: Response, next: NextFunction) => {
   try {
     const { fullname, email, password , role} = req.body;

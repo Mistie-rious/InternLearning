@@ -32,7 +32,7 @@ const contentSchema = new mongoose.Schema({
         {
           text: String,
           options: [String],
-          correctAnswer: Number, // Index of the correct option
+          correctAnswer: Number, 
         },
       ],
       duration: Number,

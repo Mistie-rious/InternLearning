@@ -11,15 +11,14 @@ const fileSchema = new mongoose.Schema({
     mimetype: {
         type: String
     },
-    url: {
-        type: String,
-        required: true
+    url:{
+        type: String
     },
     duration: {
-        type: Number // Only applicable for videos
+        type: Number 
     },
     transcript: {
-        type: String // Only applicable for videos
+        type: String 
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
