@@ -193,12 +193,7 @@ const updateSpreadsheet = async (req: any, res: Response, next: NextFunction) =>
         return;
       }
   
-     
-      if (!courseExist.content.includes(contentExist._id)) {
-        await Course.findByIdAndUpdate(course, {
-          $push: { content: contentExist._id },
-        });
-      }
+    
   
       res.status(200).json({ message: 'Quiz updated successfully', quiz: quizExist });
     } catch (error) {

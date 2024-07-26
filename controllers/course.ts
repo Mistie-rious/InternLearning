@@ -2,14 +2,8 @@ import Course from "../models/course";
 import Category from "../models/category";
 import { NextFunction, Response, Request } from "express";
 import Progress from "../models/progress";
-
-
-const createCourse = async (
-
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+import Content from "../models/content";
+const createCourse = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       title,
@@ -17,42 +11,59 @@ const createCourse = async (
       category,
       author,
       publishedDate,
-      content,
       imageUrl,
       duration,
       level,
     } = req.body;
 
+    // Check if course already exists
     const isCourseExist = await Course.findOne({ title });
-
     if (isCourseExist) {
-      res.status(400);
-      throw new Error("Course already exists");
+      res.status(400).json({ message: "Course already exists" });
+      return;
     }
 
+    // Create and save the new course
     const newCourse = new Course({
       title,
       description,
       category,
       author,
       publishedDate,
-      content,
       imageUrl,
       duration,
       level,
     });
-    await newCourse.save();
+    const savedCourse = await newCourse.save();
 
-    await Category.findByIdAndUpdate(category, {
-      $push: { courses: newCourse._id },
+    // Create an empty Content document for the new course
+    const newContent = new Content({
+      course: savedCourse._id,
+      assignments: [],
+      quizzes: [],
+      chapters: [],
+      videos: []
     });
 
-    res.status(201).json({ message: "Course created successfully" });
+    const savedContent = await newContent.save();
+
+    // Update the course with the content ID
+    savedCourse.content = savedContent._id;
+    await savedCourse.save();
+
+    await Category.findByIdAndUpdate(category, {
+      $push: { courses: savedCourse._id },
+    });
+
+    res.status(201).json({
+      message: "Course and associated content created successfully",
+      course: savedCourse,
+      content: savedContent
+    });
   } catch (error) {
     next(error);
   }
 };
-
 const enrollCourse = async (req: any, res: Response, next: NextFunction) => {
   try {
     const {id} = req.params

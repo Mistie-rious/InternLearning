@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 const morgan = require('morgan')
 import connectToMongoDB from "./init/mongoDb";
-import { authRoute, categoryRoute, courseRoute, assignmentRoute, contentRoute, videoRoute, progressRoute, quizRoute} from "./routes";
+import { authRoute, categoryRoute, courseRoute, assignmentRoute, videoRoute, progressRoute, quizRoute} from "./routes";
 dotenv.config();
 const app = express();
 import errorHandler from "./middlewares/errorHandler";
@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/course", courseRoute);
-app.use("/api/v1/content", contentRoute);
+// app.use("/api/v1/content", contentRoute);
 app.use('/api/v1/video', videoRoute)
 app.use('/api/v1/progress', progressRoute)
 app.use('/api/v1/quiz', quizRoute)

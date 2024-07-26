@@ -10,7 +10,7 @@ const courseSchema = new mongoose.Schema({
   },
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   publishedDate: { type: Date, default: Date.now, required: true },
-  content: [{ type: mongoose.Schema.Types.ObjectId, ref: "Content" }],
+  content: { type: mongoose.Schema.Types.ObjectId, ref: "Content" },
   imageUrl: {
     type: String,
     default: "",

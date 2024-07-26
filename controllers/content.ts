@@ -1,123 +1,95 @@
-import mongoose from "mongoose";
-import Content from "../models/content";
-import Course from "../models/course";
-import { Request, NextFunction, Response } from "express";
+// import mongoose from "mongoose";
+// import Content from "../models/content";
+// import Course from "../models/course";
+// import { Request, NextFunction, Response } from "express";
+
+
+// const createContent = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { course, content } = req.body;
+
+
+//     const courseExist = await Course.findById(course);
+//     if (!courseExist) {
+//       res.status(400).json({ message: "Course does not exist" });
+//       return;
+//     }
+
+//     let courseContent = await Content.findOne({ course });
+
+//     const updateFields = {
+//       assignments: content.assignment ? [content.assignment] : [],
+//       quizzes: content.quiz ? [content.quiz] : [],
+//       chapters: content.chapter ? [content.chapter] : [],
+//       videos: content.video ? [content.video] : [],
+//     };
+
+//     if (courseContent) {
+
+//       Object.keys(updateFields).forEach(field => {
+//         if (updateFields[field].length > 0) {
+//           courseContent[field].push(...updateFields[field]);
+//         }
+//       });
+
+//       await courseContent.save();
+//       res.status(200).json({ message: "Content updated successfully", courseContent });
+//     } else {
+     
+//       const newContent = new Content({
+//         course,
+//         ...updateFields,
+//       });
+
+//       await newContent.save();
+//       await Course.findByIdAndUpdate(course, { $push: { content: newContent._id } });
+
+//       res.status(201).json({ message: "Content created successfully", newContent });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+// const getContent = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { id } = req.params;
+
+//     const content = await Content.findOne({ course: id })
+//       .populate("assignments")
+//       .populate("quizzes")
+//       .populate("course");
+
+//     if (!content) {
+//       res.status(404).json({ message: "Content not found" });
+//       return;
+//     }
+
+//     res.status(200).json({ data: content, message: "Content received successfully!" });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+// const deleteContent = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { id } = req.params;
+
+//     const content = await Content.findOneAndDelete({ course: id });
+
+//     if (!content) {
+//       res.status(404).json({ message: "Content not found" });
+//       return;
+//     }
+
+//     res.status(200).json({ data: content, message: "Content deleted successfully!" });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 
 
-const createContent = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { contentType, order, title, description, course, content } = req.body;
-
-    const contentExist = await Content.findOne({ title });
-
-    if (contentExist) {
-      res.status(400).json({ message: "Content already exists" });
-      return;
-    }
-
-    const courseExist = await Course.findById(course);
-    if (!courseExist) {
-      res.status(400).json({ message: "Course does not exist" });
-      return;
-    }
-
-    const newContent = new Content({
-      contentType,
-      order,
-      title,
-      description,
-      course,
-      content
-    });
-
-    await newContent.save();
-
-    await Course.findByIdAndUpdate(course, {
-      $push: { content: newContent._id },
-    });
-
-    res.status(201).json({ message: "Content created successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-
-const updateContent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { contentType, order, title, description, course, content } =
-      req.body;
-
-    const { id } = req.params;
-
-    const updatedContent = {
-      contentType,
-      order,
-      title,
-      description,
-      course,
-      content,
-    };
-
-    const options = { new: true };
-
-    const editedContent = await Content.findOneAndUpdate(
-      { _id: id },
-      updatedContent,
-      options
-    );
-
-    if (!editedContent) {
-      res.status(404).json({ message: "Content not found" });
-      return;
-    }
-
-    res
-      .status(200)
-      .json({ data: editedContent, message: "Content updated successfully!" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getContent = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-
-    const content = await Content.findOne({ _id: id }).populate("course");
-
-    if (!content) {
-      res.status(404).json({ message: "Content not found" });
-    }
-
-    res
-      .status(200)
-      .json({ data: content, message: "Content received successfully!" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const deleteContent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { id } = req.params;
-
-  const content = await Content.findOneAndDelete({ _id: id });
-
-  if (!content) {
-    res.status(404).json({ message: "Content not found" });
-  }
-
-  res
-    .status(200)
-    .json({ data: content, message: "Content deleted successfully!" });
-};
-export default { createContent, updateContent, getContent, deleteContent };
+// export default { createContent, getContent, deleteContent };
