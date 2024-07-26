@@ -5,6 +5,7 @@ import {uploadNewFile, signedUrl, deleteFileFromS3} from "../utils/awsS3"
 const multer = require('multer')
 import { parseExcelFile } from "../utils/excelService";
 import File from '../models/video'
+
 const uploadFile = async (req:any,res:Response,next:NextFunction) => {
 try{
     const {file} = req
