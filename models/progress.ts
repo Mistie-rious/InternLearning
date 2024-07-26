@@ -7,6 +7,15 @@ const quizResultSchema = new Schema({
   score: { type: Number, required: true },
 });
 
+const assignmentResultSchema = new Schema({
+  assignmentId: { type: Schema.Types.ObjectId, required: true, ref: "Assignment" },
+  submittedAt: { type: Date, required: true },
+  score: { type: Number, required: true },
+});
+
+
+
+
 const progressSchema = new Schema(
   {
     student: {
@@ -23,6 +32,7 @@ const progressSchema = new Schema(
     },
     completedContents: [{ type: Schema.Types.ObjectId, ref: "Content" }],
     quizResults: [quizResultSchema],
+    assignmentResults: [assignmentResultSchema],
   },
   { timestamps: true }
 );

@@ -3,7 +3,8 @@ import categoryController from './category'
 import notFound from './notFound'
 import courseController from './course'
 import contentController from './content'
-import fileController from './file'
+import videoController from './video'
 import progressController from './progress'
 import quizController from './quiz'
-export {authController, categoryController, courseController, contentController, fileController, progressController, quizController, notFound}
+import assignmentController from './assignment'
+export {assignmentController, authController, categoryController, courseController, contentController, videoController, progressController, quizController, notFound}

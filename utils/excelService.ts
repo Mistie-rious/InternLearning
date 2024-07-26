@@ -1,10 +1,9 @@
 import ExcelJS from 'exceljs';
-import fs from 'fs';
 
-export const parseExcelFile = async (filePath: string) => {
+export const parseExcelFile = async (fileBuffer: Buffer) => {
   try {
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(filePath);
+    await workbook.xlsx.load(fileBuffer);
     const worksheet = workbook.worksheets[0]; // Assuming the first sheet contains the questions
 
     const questions: any[] = [];
@@ -22,11 +21,8 @@ export const parseExcelFile = async (filePath: string) => {
       }
     });
 
-    // Delete the uploaded file after processing
-    fs.unlinkSync(filePath);
-
     return questions;
-} catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to parse Excel file: ${error.message}`);
     } else {

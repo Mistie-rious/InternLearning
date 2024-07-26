@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Content from "../models/content";
 import Course from "../models/course";
 import { Request, NextFunction, Response } from "express";
-import {fileController }from './'
+
 
 
 const createContent = async (req: Request, res: Response, next: NextFunction) => {

@@ -70,6 +70,7 @@ const enrollCourse = async (req: any, res: Response, next: NextFunction) => {
       student: studentId,
       course: id,
       completedContents: [],
+      assignmentResults: [],
       quizResults: []
     });
 

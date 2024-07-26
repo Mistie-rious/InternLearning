@@ -22,11 +22,6 @@ const contentSchema = new mongoose.Schema({
     type: Number,
   },
   content: {
-    assignment: {
-      instructions: String,
-      dueDate: Date,
-      maximumMarks: Number,
-    },
     chapter: {
       sections: [
         {
@@ -35,15 +30,19 @@ const contentSchema = new mongoose.Schema({
         },
       ],
     },
-    video: {
-      ref: "Video",
+    assignment: {
+      type:  mongoose.Schema.Types.ObjectId,
+      ref: "Assignment",
+    },
+    quiz: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Quiz",
+    },
+    video: {
+      url: String
     },
   },
-  quiz: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Quiz",
-  },
+
 });
 
 const Content = mongoose.model("Content", contentSchema);

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const fileSchema = new mongoose.Schema({
+const videoSchema = new mongoose.Schema({
     key: {
         type: String,
         required: true
@@ -26,6 +26,6 @@ const fileSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-const File = mongoose.model('File', fileSchema);
+const Video = mongoose.model('Video', videoSchema);
 
-export default File;
+export default Video;
