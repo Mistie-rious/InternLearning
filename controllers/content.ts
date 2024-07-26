@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
-import Content from "../models/content schema/content";
+import Content from "../models/content";
 import Course from "../models/course";
 import { Request, NextFunction, Response } from "express";
 import {fileController }from './'
 
-const createContent = async (
-  req: any,
-  res: Response,
-  next: NextFunction
-) => {
+
+const createContent = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { contentType, order, title, description, course, content } =
-      req.body;
+    const { contentType, order, title, description, course, content } = req.body;
 
     const contentExist = await Content.findOne({ title });
 
@@ -26,18 +22,14 @@ const createContent = async (
       return;
     }
 
-    
-
-    
     const newContent = new Content({
       contentType,
       order,
       title,
       description,
       course,
-      content: content 
+      content
     });
-
 
     await newContent.save();
 
@@ -50,6 +42,7 @@ const createContent = async (
     next(error);
   }
 };
+
 
 const updateContent = async (
   req: Request,

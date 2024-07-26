@@ -27,16 +27,6 @@ const contentSchema = new mongoose.Schema({
       dueDate: Date,
       maximumMarks: Number,
     },
-    quiz: {
-      questions: [
-        {
-          text: String,
-          options: [String],
-          correctAnswer: Number, 
-        },
-      ],
-      duration: Number,
-    },
     chapter: {
       sections: [
         {
@@ -46,10 +36,13 @@ const contentSchema = new mongoose.Schema({
       ],
     },
     video: {
-  
       ref: "Video",
       type: mongoose.Schema.Types.ObjectId,
     },
+  },
+  quiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Quiz",
   },
 });
 

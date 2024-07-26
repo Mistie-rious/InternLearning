@@ -27,22 +27,59 @@ const createContentValidator = [
     .optional()
     .isInt({ min: 0 })
     .withMessage('Maximum marks must be a non-negative integer'),
-  body('content.quiz.questions')
+  body('content.quiz')
+    .optional()
+    .isMongoId()
+    .withMessage('Quiz ID must be a valid MongoDB ObjectId'),
+  body('content.chapter.sections')
     .optional()
     .isArray()
-    .withMessage('Questions must be an array')
-    .custom((value) => value.every((question: any) => 
-      typeof question.text === 'string' &&
-      Array.isArray(question.options) &&
-      question.options.every((option: any) => typeof option === 'string') &&
-      Number.isInteger(question.correctAnswer) &&
-      question.correctAnswer >= 0 && question.correctAnswer < question.options.length
+    .withMessage('Sections must be an array')
+    .custom((value) => value.every((section: any) => 
+      typeof section.title === 'string' &&
+      typeof section.content === 'string'
     ))
-    .withMessage('Each question must have valid text, options, and correctAnswer'),
-  body('content.quiz.duration')
+    .withMessage('Each section must have a valid title and content'),
+  body('content.video')
+    .optional()
+    .custom((id) => mongoose.Types.ObjectId.isValid(id))
+    .withMessage('Video ID must be a valid MongoDB ObjectId')
+];
+
+const updateContentValidator = [
+  check('id').isMongoId().withMessage('Invalid content ID.'),
+  check('contentType')
+    .optional()
+    .isIn(['assignment', 'quiz', 'chapter', 'video'])
+    .withMessage('Invalid content type'),
+  check('title')
+    .optional()
+    .notEmpty()
+    .withMessage('Title is required'),
+  check('course')
+    .optional()
+    .isMongoId()
+    .withMessage('Invalid course ID'),
+  check('order')
     .optional()
     .isInt({ min: 0 })
-    .withMessage('Duration must be a non-negative integer'),
+    .withMessage('Order must be a non-negative integer'),
+  body('content.assignment.instructions')
+    .optional()
+    .isString()
+    .withMessage('Instructions must be a string'),
+  body('content.assignment.dueDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Due date must be a valid date'),
+  body('content.assignment.maximumMarks')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('Maximum marks must be a non-negative integer'),
+  body('content.quiz')
+    .optional()
+    .isMongoId()
+    .withMessage('Quiz ID must be a valid MongoDB ObjectId'),
   body('content.chapter.sections')
     .optional()
     .isArray()
@@ -66,4 +103,4 @@ const deleteContentValidator = [
   check('id').isMongoId().withMessage('Invalid content ID.')
 ];
 
-export  {createContentValidator, getContentValidator, deleteContentValidator};
+export { createContentValidator, updateContentValidator, getContentValidator, deleteContentValidator };

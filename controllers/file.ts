@@ -2,8 +2,9 @@ import { NextFunction, Response, Request } from "express"
 const path = require('path')
 import {validateExtension }from '../validators/file'
 import {uploadNewFile, signedUrl, deleteFileFromS3} from "../utils/awsS3"
-
-import File from '../models/content schema/video'
+const multer = require('multer')
+import { parseExcelFile } from "../utils/excelService";
+import File from '../models/video'
 const uploadFile = async (req:any,res:Response,next:NextFunction) => {
 try{
     const {file} = req
@@ -45,6 +46,7 @@ if (Key){
 }
 }
 
+
 const getSignedUrl = async (req:any, res:Response, next:NextFunction) => {
     try{
         const {key} = req.query
@@ -78,4 +80,20 @@ const deleteFile = async (req:any, res:Response, next:NextFunction) => {
 
     }
 }
-export default {uploadFile, getSignedUrl, deleteFile}
+
+const uploadSpreadsheet = async (req:any, res:Response, next:NextFunction) => {
+try{
+
+   const {file} = req
+
+    const questions = await parseExcelFile(file);
+
+    res.status(200).json({ message: 'File processed successfully', questions });
+}catch(error){
+    next(error)
+
+}
+
+}
+
+export default {uploadFile, getSignedUrl, deleteFile, uploadSpreadsheet}

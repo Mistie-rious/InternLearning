@@ -3,5 +3,6 @@ import categoryRoute from './category'
 import courseRoute from './course'
 import contentRoute from './content'
 import fileRoute from './file'
-import prores
-export {authRoute, categoryRoute, courseRoute, contentRoute, fileRoute}
+import progressRoute from './progress'
+import quizRoute from './quiz'
+export {authRoute, categoryRoute, courseRoute, contentRoute, fileRoute, progressRoute, quizRoute}
