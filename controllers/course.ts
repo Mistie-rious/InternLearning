@@ -3,6 +3,7 @@ import Category from "../models/category";
 import { NextFunction, Response, Request } from "express";
 import Progress from "../models/progress";
 import Content from "../models/content";
+
 const createCourse = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
@@ -23,7 +24,7 @@ const createCourse = async (req: Request, res: Response, next: NextFunction) => 
       return;
     }
 
-    // Create and save the new course
+
     const newCourse = new Course({
       title,
       description,
@@ -64,6 +65,7 @@ const createCourse = async (req: Request, res: Response, next: NextFunction) => 
     next(error);
   }
 };
+
 const enrollCourse = async (req: any, res: Response, next: NextFunction) => {
   try {
     const {id} = req.params
@@ -86,6 +88,14 @@ const enrollCourse = async (req: any, res: Response, next: NextFunction) => {
     });
 
     await newProgress.save();
+
+    const course = await Course.findById(id);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    course.students.push(studentId);
+    await course.save();
 
     res.status(200).json({ message: "Enrolled in course successfully!" });
   } catch (error) {

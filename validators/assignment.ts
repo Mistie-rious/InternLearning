@@ -1,7 +1,6 @@
 import { body, param } from "express-validator";
 
 const createAssignmentValidator = [
-    body("order").isInt({ gt: 0 }).withMessage("Order must be a positive integer"),
     body("title").notEmpty().withMessage("Title is required"),
     body("description").optional().notEmpty().withMessage("Description is required"),
     body("course").isMongoId().withMessage("Invalid course ID"),
@@ -14,7 +13,6 @@ const createAssignmentValidator = [
     body("title").optional().notEmpty().withMessage("Title cannot be empty"),
     body("description").optional().notEmpty().withMessage("Description cannot be empty"),
     body("dueDate").optional().isISO8601().withMessage("Invalid due date"),
-    body("order").optional().isInt({ gt: 0 }).withMessage("Order must be a positive integer"),
     body("maxScore").optional().isInt({ gt: 0 }).withMessage("Max score must be a positive integer"),
   ];
   
@@ -26,5 +24,16 @@ const deleteAssignmentValidator = [
   param("id").isMongoId().withMessage("Invalid assignment ID"),
 ];
 
+const submitAssignmentValidator = [
+  body("assignment").isMongoId().withMessage("Invalid assignment ID"),
+  body("content").notEmpty().withMessage("Content cannot be empty"),
+];
 
-export  { createAssignmentValidator, updateAssignmentValidator, getAssignmentValidator, deleteAssignmentValidator };
+
+const gradeSubmissionValidator = [
+  body("submission").isMongoId().withMessage("Invalid submission ID"),
+  body("score").isInt({ min: 0 }).withMessage("Score must be a non-negative integer"),
+  body("feedback").optional().notEmpty().withMessage("Feedback cannot be empty"),
+];
+
+export  { createAssignmentValidator, updateAssignmentValidator, getAssignmentValidator, deleteAssignmentValidator , submitAssignmentValidator,gradeSubmissionValidator};

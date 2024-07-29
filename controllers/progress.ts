@@ -10,30 +10,32 @@ const addProgress = async (req: any, res: Response, next: NextFunction) => {
     const progress = await Progress.findOne({ student: studentId, course: id });
 
     if (progress) {
-     
-      quizResults.forEach((newResult: any) => {
-        const index = progress.quizResults.findIndex(
-          (result: any) => result.quizId.toString() === newResult.quizId
-        );
-        if (index !== -1) {
-          progress.quizResults[index] = newResult;
-        } else {
-          progress.quizResults.push(newResult);
-        }
-      });
+      if (quizResults && Array.isArray(quizResults)) {
+        quizResults.forEach((newResult: any) => {
+          const index = progress.quizResults.findIndex(
+            (result: any) => result.quizId.toString() === newResult.quizId
+          );
+          if (index !== -1) {
+            progress.quizResults[index] = newResult;
+          } else {
+            progress.quizResults.push(newResult);
+          }
+        });
+      }
 
-      assignmentResults.forEach((newResult: any) => {
-        const index = progress.assignmentResults.findIndex(
-          (result: any) => result.assignmentId.toString() === newResult.assignmentId
-        );
-        if (index !== -1) {
-          progress.assignmentResults[index] = newResult;
-        } else {
-          progress.assignmentResults.push(newResult);
-        }
-      });
+      if (assignmentResults && Array.isArray(assignmentResults)) {
+        assignmentResults.forEach((newResult: any) => {
+          const index = progress.assignmentResults.findIndex(
+            (result: any) => result.assignmentId.toString() === newResult.assignmentId
+          );
+          if (index !== -1) {
+            progress.assignmentResults[index] = newResult;
+          } else {
+            progress.assignmentResults.push(newResult);
+          }
+        });
+      }
 
-   
       const completedContentsSet = new Set(
         progress.completedContents.map((content: any) => content.toString())
       );
@@ -45,15 +47,14 @@ const addProgress = async (req: any, res: Response, next: NextFunction) => {
       const updatedProgress = await progress.save();
       res.status(200).json({ message: "Progress updated successfully", updatedProgress });
     } else {
-  
       const newProgress = new Progress({
         student: studentId,
         course: id,
         completedContents: [...new Set(completedContents)].map(content =>
           new mongoose.Types.ObjectId(content)
         ),
-        quizResults,
-        assignmentResults
+        quizResults: quizResults || [],
+        assignmentResults: assignmentResults || []
       });
 
       const savedProgress = await newProgress.save();
@@ -106,10 +107,12 @@ const addProgress = async (req: any, res: Response, next: NextFunction) => {
     }
   };
 
-  const deleteProgress = async (req: Request, res: Response, next: NextFunction) => {
+  const deleteProgress = async (req: any, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params; 
-      const progress = await Progress.findByIdAndDelete({ _id: id });
+      const { id }: { id: string } = req.params; 
+      const studentId: ObjectId = req.user._id;
+  
+      const progress = await Progress.findOneAndDelete({ student: studentId, course: id });
   
       if (!progress) {
         return res.status(404).json({ message: "Progress record not found" });

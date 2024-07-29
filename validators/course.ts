@@ -7,7 +7,7 @@ const createCourseValidator = [
     .isString().withMessage('Title should be a type of text'),
   
   check('description')
-    .optional()
+  .notEmpty().withMessage('Course description must be filled.')
     .isString().withMessage('Description should be a type of text'),
   
   check('category')

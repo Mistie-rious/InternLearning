@@ -13,6 +13,8 @@ router.get('/:id', isAuth,  validate, getQuizValidator,  quizController.getQuiz)
 
 router.delete('/delete/:id', isAuth, isAdmin,  validate, quizController.deleteQuiz);
 
+router.get('/', isAuth, validate, quizController.getQuizzes)
+
 router.put('/update/:id', isAuth, isAdmin, validate, quizController.updateQuiz);
 
 export default router;

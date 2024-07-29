@@ -3,91 +3,81 @@ import Quiz from "../models/quiz";
 import Content from "../models/content";
 import Course from "../models/course";
 
-
 const createQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { order, title, description, course, questions, duration } = req.body;
+    const { courseId, title, questions, duration } = req.body;
 
-    const contentExist = await Content.findOne({ title });
-
-    if (contentExist) {
-      res.status(400).json({ message: "Content already exists" });
-      return;
-    }
-
-    const courseExist = await Course.findById(course);
-    if (!courseExist) {
-      res.status(400).json({ message: "Course does not exist" });
+   
+    const content = await Content.findOne({ course: courseId });
+    if (!content) {
+      res.status(404).json({ message: "Content not found for the given course" });
       return;
     }
 
     const newQuiz = new Quiz({
+      course: courseId,
+      title,
       questions,
       duration
     });
+    const savedQuiz = await newQuiz.save();
 
-    await newQuiz.save();
+  
+    content.quizzes.push(savedQuiz._id);
 
-    const newContent = new Content({
-      contentType: "quiz",
-      order,
-      title,
-      description,
-      course,
-      quiz: newQuiz._id,
+ 
+    const updatedContent = await content.save();
+
+    res.status(201).json({
+      message: "Quiz added to content successfully",
+      content: updatedContent,
+      quiz: savedQuiz
     });
-
-    await newContent.save();
-
-    await Course.findByIdAndUpdate(course, {
-      $push: { content: newContent._id },
-    });
-
-    res.status(201).json({ message: "Quiz created successfully" });
   } catch (error) {
     next(error);
   }
 };
-
 const updateQuiz = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      const { questions, duration, title, description, order } = req.body;
+  try {
+    const { id } = req.params;
+    const { questions, duration, title, description, order } = req.body;
 
-      const content = await Content.findOne({ "quiz": id });
-      if (!content) {
-        res.status(404).json({ message: "Content related to the quiz not found" });
-        return;
-      }
-  
-      const updatedQuiz = await Quiz.findByIdAndUpdate(
-        { _id: id },
-        { questions, duration },
-        { new: true }
-      );
-  
-      if (!updatedQuiz) {
-        res.status(404).json({ message: "Quiz not found" });
-        return;
-      }
-  
-      const updatedContent = await Content.findOneAndUpdate(
-        { _id: content._id },
-        { title, description, order },
-        { new: true }
-      );
-  
-      if (!updatedContent) {
-        res.status(404).json({ message: "Content not found" });
-        return;
-      }
-  
-      res.status(200).json({ message: "Quiz and content updated successfully", updatedQuiz, updatedContent });
-    } catch (error) {
-      next(error);
+    // Find the content that contains the quiz
+    const content = await Content.findOne({ quizzes: id });
+    if (!content) {
+      res.status(404).json({ message: "Content related to the quiz not found" });
+      return;
     }
-  };
-  
+
+    // Update the quiz
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+      id,
+      { title, questions, duration },
+      { new: true }
+    );
+
+    if (!updatedQuiz) {
+      res.status(404).json({ message: "Quiz not found" });
+      return;
+    }
+
+    // Update the content
+    const updatedContent = await Content.findByIdAndUpdate(
+      content._id,
+      { title, description },
+      { new: true }
+    );
+
+    if (!updatedContent) {
+      res.status(404).json({ message: "Content not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Quiz and content updated successfully", updatedQuiz, updatedContent });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -105,39 +95,70 @@ const getQuiz = async (req: Request, res: Response, next: NextFunction) => {
       next(error);
     }
   };
+
+  const getQuizzes = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { q, size, page, courseId } = req.query;
+      let query: any = {};
   
+      const sizeNumber = parseInt(size as string) || 10;
+      const pageNumber = parseInt(page as string) || 1;
+  
+      if (q) {
+        const search = new RegExp(q as string, 'i');
+        query = { $or: [{ title: search }, { description: search }] };
+      }
+  
+      if (courseId) {
+        query.courseId = courseId;
+      }
+  
+      const total = await Quiz.countDocuments(query);
+      const pages = Math.ceil(total / sizeNumber);
+      const quizzes = await Quiz.find(query)
+        .skip((pageNumber - 1) * sizeNumber)
+        .limit(sizeNumber)
+        .sort({ updatedAt: -1 })
+      
+  
+      res.status(200).json({
+        code: 200,
+        status: true,
+        message: 'Get quizzes successful',
+        data: { quizzes, total, pages, page: pageNumber, size: sizeNumber }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
   const deleteQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-
+  
       
-      const content = await Content.findOne({ "quiz": id });
+      const content = await Content.findOne({ quizzes: id });
       if (!content) {
         res.status(404).json({ message: "Content related to the quiz not found" });
         return;
       }
   
-      const deletedQuiz = await Quiz.findByIdAndDelete(id);
-  
+     
+      const deletedQuiz = await Quiz.findByIdAndDelete({_id: id});
       if (!deletedQuiz) {
         res.status(404).json({ message: "Quiz not found" });
         return;
       }
-      const deletedContent = await Content.findOneAndDelete(
-        { _id: content._id },
-      );
   
+    
+      content.quizzes = content.quizzes.filter(quizId => quizId.toString() !== id);
+      await content.save();
   
-      if (!deletedContent) {
-        res.status(404).json({ message: "Content not found" });
-        return;
-      }
-  
-      res.status(200).json({ message: "Quiz and content deleted successfully" });
+      res.status(200).json({ message: "Quiz and content reference deleted successfully" });
     } catch (error) {
       next(error);
     }
   };
+
+
   
-  
-  export default { createQuiz, updateQuiz, getQuiz, deleteQuiz };
+  export default { createQuiz, updateQuiz, getQuiz, deleteQuiz, getQuizzes };

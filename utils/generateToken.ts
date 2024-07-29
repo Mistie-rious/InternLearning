@@ -20,7 +20,7 @@ interface User {
             welp: 'test'
           },
           jwtsecret,
-          { expiresIn: '1h' }
+          { expiresIn: '5d' }
         );
 
         

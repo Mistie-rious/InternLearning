@@ -12,6 +12,14 @@ import Content from "../models/content"
 const uploadVideo= async (req: any, res: Response, next: NextFunction) => {
     try {
       const { file } = req;
+
+      const { courseId } = req.body;
+
+    const content = await Content.findOne({ course: courseId });
+    if (!content) {
+      res.status(404).json({ message: "Content not found for the given course" });
+      return;
+    }
   
       if (!file) {
         res.status(400);
@@ -39,38 +47,25 @@ const uploadVideo= async (req: any, res: Response, next: NextFunction) => {
   
         await newVideo.save();
   
-    
-          const { title, description, course, order } = req.body;
+        content.videos.push(newVideo._id);
+        const updatedContent = await content.save();
+
   
-  
-          const newContent = new Content({
-            contentType: 'video',
-            title,
-            description,
-            course,
-            order,
-            content: {
-              video: {
-                key: Key,
-              },
-            },
-          });
-  
-          await newContent.save();
-        }
         res.status(201).json({
-            code: 201,
-            status: true,
-            message: 'File uploaded successfully',
-            data: { Key },
-          });
+          message: "Video added to content successfully",
+          content: updatedContent,
+          video: newVideo
+        });
+      }
+      
+    }
+    catch (error) {
+        next(error);
+      }
       }
   
      
-     catch (error) {
-      next(error);
-    }
-  };
+
 
 const getSignedUrl = async (req:any, res:Response, next:NextFunction) => {
     try{
@@ -87,119 +82,125 @@ const getSignedUrl = async (req:any, res:Response, next:NextFunction) => {
         next(error)
     }
 }
+const deleteVideo = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { key } = req.body;
+    const {id} = req.params
 
-const deleteVideo = async (req:any, res:Response, next:NextFunction) => {
-    try{
-        const {key} = req.query;
-
-        await deleteFileFromS3(key);
-        await Video.findOneAndDelete({key})
-
-        res.status(200).json({
-            code: 200,
-            status: true,
-            message: 'File deleted successfully!'
-        })
-
-    }catch(error){
-
+    
+    const video = await Video.findOne({ _id : id });
+    if (!video) {
+      res.status(404).json({ message: "Video not found" });
+      return;
     }
-}
+
+
+    await deleteFileFromS3(key);
+
+   
+    await Video.findOneAndDelete({ key });
+
+
+    const content = await Content.findOneAndUpdate(
+      { videos: video._id },
+      { $pull: { videos: video._id } },
+      { new: true }
+    );
+
+    if (!content) {
+      res.status(404).json({ message: "Content related to the video not found" });
+      return;
+    }
+
+    res.status(200).json({
+      code: 200,
+      status: true,
+      message: 'File deleted successfully!',
+      content
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 
 const uploadSpreadsheet = async (req: any, res: Response, next: NextFunction) => {
-    try {
-      const { file } = req;
-      const { order, title, description, course, duration } = req.body;
-  
-     
-      const contentExist = await Content.findOne({ title });
-      if (contentExist) {
-        res.status(400).json({ message: 'Content already exists' });
-        return;
-      }
-  
+  try {
+    const { file } = req;
+    const { courseId, title, duration } = req.body;
 
-      const courseExist = await Course.findById(course);
-      if (!courseExist) {
-        res.status(400).json({ message: 'Course does not exist' });
-        return;
-      }
-  
-  
-      const questions = await parseExcelFile(file.buffer);
-  
-
-      const newQuiz = new Quiz({
-        questions,
-        duration,
-      });
-      await newQuiz.save();
- 
-      const newContent = new Content({
-        contentType: 'quiz',
-        order,
-        title,
-        description,
-        course,
-        quiz: newQuiz._id,
-      });
-      await newContent.save();
-
-      await Course.findByIdAndUpdate(course, {
-        $push: { content: newContent._id },
-      });
-  
-      res.status(201).json({ message: 'Quiz created successfully', newQuiz });
-    } catch (error) {
-      next(error);
+    const content = await Content.findOne({ course: courseId });
+    if (!content) {
+      res.status(404).json({ message: "Content not found for the given course" });
+      return;
     }
-  };
 
-const updateSpreadsheet = async (req: any, res: Response, next: NextFunction) => {
-    try {
-      const { file } = req;
-      const {id }= req.params
-      const { order, title, description, course, duration } = req.body;
-  
-      const quizExist = await Quiz.findById({_id: id});
-      if (!quizExist) {
-        res.status(404).json({ message: 'Quiz not found' });
-        return;
-      }
-  
-      
-      const courseExist = await Course.findById(course);
-      if (!courseExist) {
-        res.status(400).json({ message: 'Course does not exist' });
-        return;
-      }
-  
-      
-      const questions = await parseExcelFile(file.buffer);
-  
-   
-      quizExist.questions = questions as any;
-      quizExist.duration = duration;
-      await quizExist.save();
+    const questions = await parseExcelFile(file.buffer);
 
-      const contentExist = await Content.findOneAndUpdate(
-        { quiz: id },
-        { order, title, description, course },
-        { new: true }
-      );
-  
-      if (!contentExist) {
-        res.status(404).json({ message: 'Content not found' });
-        return;
-      }
-  
-    
-  
-      res.status(200).json({ message: 'Quiz updated successfully', quiz: quizExist });
-    } catch (error) {
-      next(error);
-    }
+    const newQuiz = new Quiz({
+      course: courseId,
+      title,
+      questions,
+      duration
+    });
+    const savedQuiz = await newQuiz.save();
+
+    content.quizzes.push(savedQuiz._id);
+    const updatedContent = await content.save();
+
+    res.status(201).json({
+      message: "Quiz added to content successfully",
+      content: updatedContent,
+      quiz: savedQuiz
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-  
+const updateSpreadsheet = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { file } = req;
+    const { id } = req.params;
+    const { title, description, order, duration } = req.body;
+
+    const content = await Content.findOne({ quizzes: id });
+    if (!content) {
+      res.status(404).json({ message: "Content related to the quiz not found" });
+      return;
+    }
+
+    const questions = await parseExcelFile(file.buffer);
+
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+      id,
+      { title, questions, duration },
+      { new: true }
+    );
+
+    if (!updatedQuiz) {
+      res.status(404).json({ message: "Quiz not found" });
+      return;
+    }
+
+    const updatedContent = await Content.findByIdAndUpdate(
+      content._id,
+      { title, description },
+      { new: true }
+    );
+
+    if (!updatedContent) {
+      res.status(404).json({ message: "Content not found" });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Quiz and content updated successfully",
+      updatedQuiz,
+      updatedContent
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {uploadVideo, getSignedUrl, deleteVideo, uploadSpreadsheet, updateSpreadsheet}

@@ -7,4 +7,6 @@ import videoController from './video'
 import progressController from './progress'
 import quizController from './quiz'
 import assignmentController from './assignment'
-export {assignmentController, authController, categoryController, courseController, videoController, progressController, quizController, notFound}
+import chapterController from './chapter'
+
+export {assignmentController, authController, categoryController, courseController, videoController, progressController, quizController, chapterController, notFound}

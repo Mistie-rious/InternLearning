@@ -6,4 +6,5 @@ import videoRoute from './video'
 import progressRoute from './progress'
 import quizRoute from './quiz'
 import assignmentRoute from './assignment'
-export {authRoute, assignmentRoute, categoryRoute, courseRoute, videoRoute, progressRoute, quizRoute}
+import chapterRoute from './chapter'
+export {authRoute, assignmentRoute, categoryRoute, chapterRoute, courseRoute, videoRoute, progressRoute, quizRoute}

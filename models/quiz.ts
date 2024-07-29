@@ -18,9 +18,15 @@ const questionSchema = new mongoose.Schema({
 });
 
 const quizSchema = new mongoose.Schema({
+  title: String,
   questions: [questionSchema],
   duration: {
     type: Number,
+    required: true,
+  },
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
     required: true,
   },
 });
