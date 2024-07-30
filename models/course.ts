@@ -25,13 +25,13 @@ const courseSchema = new mongoose.Schema({
     required: true,
   },
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  reviews: [
-    {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-      rating: { type: Number, required: true, min: 1, max: 5 },
-      comment: { type: String, required: true },
-    },
-  ],
+  // reviews: [
+  //   {
+  //     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  //     rating: { type: Number, required: true, min: 1, max: 5 },
+  //     comment: { type: String, required: true },
+  //   },
+  // ],
 });
 
 const Course = mongoose.model("Course", courseSchema);

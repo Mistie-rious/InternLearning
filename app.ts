@@ -21,7 +21,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/course", courseRoute);
 // app.use("/api/v1/content", contentRoute);
-app.use('/api/v1/video', videoRoute)
+app.use('/api/v1/file', videoRoute)
 app.use('/api/v1/progress', progressRoute)
 app.use('/api/v1/quiz', quizRoute)
 app.use('/api/v1/assignment', assignmentRoute)

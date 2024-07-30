@@ -11,6 +11,10 @@ const validateSpreadsheetExtension = (ext: string) => {
     return spreadsheetExtensions.includes(ext);
 }
 
+const validateImageExtension = (ext: string) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    return imageExtensions.includes(ext);
+}
 
 
-export {validateExtension, validateSpreadsheetExtension}
+export {validateExtension, validateSpreadsheetExtension, validateImageExtension}
