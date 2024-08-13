@@ -8,7 +8,10 @@ dotenv.config();
 const app = express();
 import errorHandler from "./middlewares/errorHandler";
 import { notFound } from "./controllers";
+const cors = require('cors')
 
+//cors
+app.use(cors())
 
 //mongo
 connectToMongoDB()
