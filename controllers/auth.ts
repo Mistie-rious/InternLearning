@@ -20,9 +20,20 @@ const signup = async (req: any, res: Response, next: NextFunction) => {
 
     const hashedPassword = await hashPassword(password);
 
+
+
     const newUser = new User({ fullname, email, password: hashedPassword , role});
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+
+    const token = generateToken({
+      _id: newUser._id,
+      fullname: newUser.fullname,
+      email: newUser.email,
+      role: newUser.role,
+    });
+
+
+    res.status(201).json({ message: "User created successfully", token});
   } catch (error) {
     next(error);
   }

@@ -17,7 +17,7 @@ interface User {
             email: user.email,
             fullname: user.fullname,
             role: user.role,
-            welp: 'test'
+       
           },
           jwtsecret,
           { expiresIn: '5d' }
