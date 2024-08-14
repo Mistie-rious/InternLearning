@@ -72,6 +72,24 @@ const signin = async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
+const getLoggedInUser = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 const verifyCode = async (req: any, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
@@ -269,4 +287,4 @@ const changePassword = async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export default { signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword };
+export default { signup, signin, getLoggedInUser, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword };
