@@ -3,5 +3,5 @@ An Intern Learning System, which provides APIs for user authentication, course m
 
 Prerequisites
 
-    Node.js: Ensure Node.js is installed on your machine.
-    MongoDB: This system uses MongoDB for data storage. You can either install MongoDB locally or use a cloud-based MongoDB service like MongoDB Atlas
+Node.js: Ensure Node.js is installed on your machine.
+MongoDB: This system uses MongoDB for data storage. You can either install MongoDB locally or use a cloud-based MongoDB service like MongoDB Atlas
